@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Especificaciones para IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        gray: {
+                            850: '#1f2937',
+                            900: '#111827',
+                            950: '#030712',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'slide-up': 'slideUp 0.4s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #030712; /* Tailwind gray-950 */
+            color: #f3f4f6; /* Tailwind gray-100 */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Scrollbar styling for a premium feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+
+        .prose pre {
+            background-color: #111827 !important;
+            border: 1px solid #1f2937;
+        }
+        
+        .nav-item.active {
+            background-color: #1f2937;
+            color: #ffffff;
+            border-left: 2px solid #ffffff;
+        }
+        .nav-item {
+            border-left: 2px solid transparent;
+        }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden selection:bg-gray-700 selection:text-white">
+
+    <!-- Mobile Header -->
+    <div class="md:hidden fixed top-0 left-0 right-0 h-16 bg-gray-950 border-b border-gray-900 z-50 flex items-center justify-between px-4">
+        <div class="font-semibold tracking-tight">Escribí Especificaciones</div>
+        <button id="mobile-menu-btn" class="p-2 text-gray-400 hover:text-white">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+    </div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 w-72 bg-gray-950 border-r border-gray-900 z-40 transition-transform duration-300 ease-in-out flex flex-col h-full pt-16 md:pt-0">
+        <div class="p-6 pb-2 border-b border-gray-900 hidden md:block">
+            <h1 class="text-sm font-semibold tracking-wide text-gray-400 uppercase mb-1">Guía para IA</h1>
+            <h2 class="text-lg font-medium text-white tracking-tight">Escribí Especificaciones, No Prompts</h2>
+        </div>
+        <nav id="nav-list" class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+            <!-- Navigation items injected by JS -->
+        </nav>
+        <div class="p-4 border-t border-gray-900 text-xs text-gray-500">
+            Basado en principios de diseño de alta precisión.
+        </div>
+    </aside>
+
+    <!-- Overlay for mobile -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto bg-[#0a0a0a] pt-16 md:pt-0">
+        <div class="max-w-3xl mx-auto p-6 md:p-12 lg:p-20 min-h-full flex flex-col">
+            
+            <article id="content-area" class="w-full flex-1 animate-fade-in">
+                <!-- Content injected by JS -->
+            </article>
+
+            <!-- Navigation Buttons -->
+            <div class="mt-16 pt-8 border-t border-gray-900 flex justify-between items-center text-sm">
+                <button id="btn-prev" class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group invisible">
+                    <svg class="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    Anterior
+                </button>
+                <button id="btn-next" class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group">
+                    Siguiente
+                    <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification for Copy -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-gray-800 text-white px-4 py-2 rounded-md shadow-lg text-sm font-medium transform translate-y-10 opacity-0 transition-all duration-300 pointer-events-none">
+        Copiado al portapapeles
+    </div>
+
+    <script>
+        const guideData = [
+            {
+                title: "Pensá como un Director Creativo",
+                description: "La diferencia entre un sitio mediocre y uno profesional rara vez es el modelo. Es cómo estructurás la información inicial.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">Las IAs generativas no tienen gusto. Solo promedian sus datos de entrenamiento. Si no les marcás un rumbo, el resultado será genérico, predecible y aburrido.</p>
+                    
+                    <div class="mb-8 p-5 bg-blue-950/20 border border-blue-900/30 rounded-lg">
+                        <h4 class="text-blue-400 text-sm font-semibold mb-2 flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Por qué funciona esto
+                        </h4>
+                        <p class="text-sm text-gray-300 leading-relaxed">Al actuar como director creativo, le acotás el margen de error al modelo. Le marcás la cancha. Definir <strong>público</strong> y <strong>sensación</strong> obliga a la IA a cruzar datos con patrones de diseño específicos. Y descarta el código basura.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-red-950/20 border border-red-900/30 rounded-lg p-5">
+                            <h4 class="text-red-400 text-xs font-semibold uppercase tracking-wider mb-3">En lugar de esto</h4>
+                            <div class="font-mono text-sm text-gray-300">
+                                > Hacé una landing moderna.
+                            </div>
+                            <p class="text-xs text-red-300/70 mt-3">Demasiado ambiguo. Para una IA, "moderno" puede ser un sitio corporativo de 2015 o una plataforma crypto de 2022.</p>
+                        </div>
+                        
+                        <div class="bg-green-950/20 border border-green-900/30 rounded-lg p-5">
+                            <h4 class="text-green-400 text-xs font-semibold uppercase tracking-wider mb-3 flex justify-between items-center">
+                                Escribí esto
+                                <button onclick="copyText('director-creativo')" class="text-gray-500 hover:text-white transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                </button>
+                            </h4>
+                            <pre id="director-creativo" class="font-mono text-xs text-gray-300 whitespace-pre-wrap">Quiero una landing para un estudio de branding.
+
+Objetivo:
+Conseguir reuniones cualificadas.
+
+Sensación:
+Premium, minimalista, tecnológica.
+
+Público:
+Empresas B2B (Directores de Marketing).
+
+Referencias:
+Apple, Linear, Stripe</pre>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Separá por bloques",
+                description: "La IA procesa mejor la información cuando está segmentada.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">Los modelos de lenguaje usan un mecanismo llamado <strong>Atención</strong>. Si enviás un bloque de texto masivo, esa atención se diluye. Al separar por temas, forzás a la IA a concentrarse en cada bloque por separado.</p>
+                    
+                    <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div class="p-4 border border-gray-800 rounded-md bg-gray-900/50">
+                            <h5 class="text-white font-medium mb-2">Bloque monolítico (Malo)</h5>
+                            <p class="text-gray-500">La IA mezcla instrucciones, olvida reglas y fusiona conceptos que se contradicen.</p>
+                        </div>
+                        <div class="p-4 border border-gray-800 rounded-md bg-gray-900/50">
+                            <h5 class="text-white font-medium mb-2">Bloques modulares (Excelente)</h5>
+                            <p class="text-gray-500">Actúan como variables o parámetros. La IA verifica cada bloque antes de escribir una línea de código.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-5 relative group">
+                        <button onclick="copyText('bloques-markdown')" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                        <pre id="bloques-markdown" class="font-mono text-sm text-gray-300 whitespace-pre-wrap"># Objetivo
+Crear un dashboard administrativo.
+
+# Usuario
+Gerentes financieros que usan Excel todo el día.
+
+# Problema
+Los datos actuales son difíciles de leer de un vistazo.
+
+# Estilo visual
+Minimalista. Modo oscuro por defecto. Alta densidad de información pero sin sentirse abrumador.
+
+# Restricciones técnicas
+No usar librerías externas de gráficos, usar solo CSS grid/flexbox básico y HTML semántico.</pre>
+                    </div>
+                `
+            },
+            {
+                title: "Usá Markdown siempre",
+                description: "Claude y los demás modelos se entrenaron leyendo repositorios y documentación en Markdown.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">El Markdown es su idioma nativo. Cuando estructurás la información así, la IA comprende mucho mejor y se equivoca menos.</p>
+                    
+                    <div class="grid grid-cols-2 gap-4 text-sm mb-8">
+                        <div class="p-4 border border-gray-800 rounded-md bg-gray-900/50">
+                            <code class="text-blue-400"># Título Principal</code>
+                            <p class="text-xs text-gray-500 mt-2">Marca un cambio de contexto.</p>
+                        </div>
+                        <div class="p-4 border border-gray-800 rounded-md bg-gray-900/50">
+                            <code class="text-blue-400">- Listas (Bullets)</code>
+                            <p class="text-xs text-gray-500 mt-2">Obliga a la IA a procesar elemento por elemento.</p>
+                        </div>
+                        <div class="p-4 border border-gray-800 rounded-md bg-gray-900/50">
+                            <code class="text-blue-400">> Citas de contexto</code>
+                            <p class="text-xs text-gray-500 mt-2">Útil para separar citas o feedback.</p>
+                        </div>
+                        <div class="p-4 border border-gray-800 rounded-md bg-gray-900/50">
+                            <code class="text-blue-400">\`\`\`código\`\`\`</code>
+                            <p class="text-xs text-gray-500 mt-2">Aísla el código de las instrucciones.</p>
+                        </div>
+                    </div>
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-5">
+                        <h4 class="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-3">Ejemplo de arquitectura Wireframe</h4>
+                        <pre class="font-mono text-sm text-gray-300 whitespace-pre-wrap"># Estructura de la página (Wireframe)
+
+## 1. Top Navigation
+- Logo a la izquierda
+- Links centrales: Producto, Precios, Docs
+- Botón CTA derecho: "Empezar gratis"
+
+## 2. Hero Section
+- Tagline principal (h1 grande)
+- Subtítulo descriptivo (p)
+- Grupo de botones: Primario y Secundario
+- Componente interactivo de demo</pre>
+                    </div>
+                `
+            },
+            {
+                title: "Pensar antes de programar",
+                description: "Obligá al modelo a pensar en voz alta antes de tirar código.",
+                content: `
+                    <p class="text-gray-400 mb-4 leading-relaxed">Pedir código directo fuerza a la IA a predecir sin planificar. Esto genera errores de arquitectura. <strong>Mejor pedile que estructure la solución antes de programar.</strong></p>
+                    
+                    <div class="mb-6 p-4 bg-purple-950/20 border border-purple-900/30 rounded-lg">
+                        <h4 class="text-purple-400 text-sm font-semibold mb-2 flex items-center gap-2">🧠 El superpoder: Chain of Thought</h4>
+                        <p class="text-sm text-gray-300">Cuando la IA explica su razonamiento, ese mismo texto sirve de anclaje para el código que viene después. Estás armando el plano antes de levantar las paredes.</p>
+                    </div>
+
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-5 border-l-4 border-l-blue-500 relative group">
+                        <button onclick="copyText('pensar')" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                        <pre id="pensar" class="font-mono text-sm text-gray-200 whitespace-pre-wrap">Quiero construir un carrito de compras.
+Pero NO escribas código todavía.
+
+Paso 1: Analizá los posibles casos límite (edge cases) que podrían romper el carrito.
+Paso 2: Proponé una estructura de estado (state management) que sea escalable.
+Paso 3: Esperá mi aprobación sobre esa arquitectura antes de escribir el primer componente.</pre>
+                    </div>
+                `
+            },
+            {
+                title: "Contexto de Proyecto (System Prompt)",
+                description: "No repitas las mismas reglas en cada chat. Armá un documento de leyes absolutas.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">Las IAs no tienen memoria. Si trabajás en un proyecto largo, armá un archivo <code class="text-gray-300 bg-gray-800 px-1 rounded">PROJECT.md</code> con tus preferencias estéticas y técnicas.</p>
+                    
+                    <ul class="space-y-4 mb-6 text-sm text-gray-300">
+                        <li class="flex gap-3">
+                            <span class="text-green-400">✓</span>
+                            <div><strong>Garantiza consistencia:</strong> Garantiza consistencia visual entre todos los componentes.</div>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-green-400">✓</span>
+                            <div><strong>Ahorra tokens:</strong> Solo lo escribís una vez y después le pedís que lea el archivo.</div>
+                        </li>
+                    </ul>
+
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-5 relative group">
+                        <button onclick="copyText('contexto')" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                        <pre id="contexto" class="font-mono text-sm text-gray-300 whitespace-pre-wrap"># REGLAS MAESTRAS DEL PROYECTO
+
+1. ESTÉTICA VISUAL
+- Inspiración principal: Linear, Apple, Vercel.
+- Prohibido terminantemente usar: Sombras grandes, gradientes saturados, bordes redondeados exagerados (máximo xl).
+- Usar SIEMPRE tipografía Inter o sistema nativo.
+
+2. CÓDIGO HTML/CSS
+- Escribir clases utilitarias estilo Tailwind siempre.
+- Mantener el HTML semántico (<main>, <article>, <section>).
+
+3. EXPERIENCIA
+- Todo elemento clickeable debe tener transición y estado hover.
+- La interfaz debe sentirse "snappy" (rápida, sin animaciones lentas).</pre>
+                    </div>
+                `
+            },
+            {
+                title: "No describas colores de forma ambigua",
+                description: "Las IAs no ven colores, leen códigos matemáticos.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">Pedir 'un azul profesional' es dejar que la IA adivine. Probablemente te devuelva el azul por defecto de Bootstrap y arruine el diseño.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-red-950/20 border border-red-900/30 rounded-lg p-5">
+                            <h4 class="text-red-400 text-xs font-semibold uppercase tracking-wider mb-3">Vago (Adivinanza)</h4>
+                            <div class="font-mono text-sm text-gray-300">
+                                > Usá un fondo oscuro lindo y botones naranjas llamativos.
+                            </div>
+                        </div>
+                        <div class="bg-green-950/20 border border-green-900/30 rounded-lg p-5">
+                            <h4 class="text-green-400 text-xs font-semibold uppercase tracking-wider mb-3">Preciso (Matemático)</h4>
+                            <pre class="font-mono text-sm text-gray-300 whitespace-pre-wrap">Variables de color (Modo Oscuro):
+Fondo Base: #030712
+Superficies: #111827
+Bordes: #1f2937
+Texto Primario: #f9fafb
+Acento (Botones): #f97316</pre>
+                        </div>
+                    </div>
+                    
+                    <p class="text-sm text-gray-400">💡 <strong>Tip pro:</strong> Si no sabés qué valores usar, pedile: <em>'Armá una paleta HEX inspirada en Stripe, adaptada para modo oscuro puro'</em>, y usá esos códigos.</p>
+                `
+            },
+            {
+                title: "Describí sensaciones (Mapeo Semántico)",
+                description: "Las IAs asocian adjetivos con patrones de diseño concretos.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">Aunque suene poco técnico, hablar de sensaciones funciona. La IA usa mapas semánticos para traducir emociones en CSS.</p>
+                    
+                    <div class="mb-6 border border-gray-800 rounded-lg overflow-hidden text-sm">
+                        <div class="bg-gray-900 px-4 py-2 border-b border-gray-800 text-white font-medium">Cómo traduce Claude tus sensaciones:</div>
+                        <ul class="divide-y divide-gray-800">
+                            <li class="px-4 py-3 flex justify-between"><span class="text-gray-400">"Calma / Control"</span> <span class="text-blue-400 font-mono">→ padding masivo, colores desaturados, animaciones ease-in-out.</span></li>
+                            <li class="px-4 py-3 flex justify-between"><span class="text-gray-400">"Premium / Lujo"</span> <span class="text-blue-400 font-mono">→ tracking amplio en mayúsculas, serif o sans finas, contraste alto blanco/negro.</span></li>
+                            <li class="px-4 py-3 flex justify-between"><span class="text-gray-400">"Tecnológico / Dev"</span> <span class="text-blue-400 font-mono">→ fuentes monoespaciadas, bordes muy definidos, colores neón sobre oscuros puros.</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-5 relative group">
+                        <button onclick="copyText('sensaciones')" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                        <pre id="sensaciones" class="font-mono text-sm text-gray-300 whitespace-pre-wrap">Quiero que utilices propiedades de CSS y diseño que transmitan las siguientes sensaciones:
+
+- Calma y control.
+- Precisión quirúrgica.
+- Confianza institucional.
+
+Nada que se sienta infantil, barato o como un "startup" genérico desesperado por llamar la atención.</pre>
+                    </div>
+                `
+            },
+            {
+                title: "Explicá lo que NO querés (Anti-Prompting)",
+                description: "Eliminá los malos hábitos de la IA desde el principio.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">Los LLMs tienden al promedio. Si pedís una web tech, van a meter vectores genéricos y gradientes violetas. <strong>El anti-prompting es tu filtro.</strong></p>
+                    
+                    <div class="mb-6 p-4 bg-orange-950/20 border border-orange-900/30 rounded-lg">
+                        <h4 class="text-orange-400 text-sm font-semibold mb-2">Por qué es indispensable</h4>
+                        <p class="text-sm text-gray-300">A la IA le cuesta menos entender prohibiciones que adivinar tu buen gusto. Al vetar los clichés, la forzás a buscar soluciones limpias.</p>
+                    </div>
+
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-5 border-l-4 border-l-red-500 relative group">
+                        <button onclick="copyText('anti-prompt')" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                        <pre id="anti-prompt" class="font-mono text-sm text-gray-200 whitespace-pre-wrap">Evitar estrictamente lo siguiente (si lo usás, la calidad bajará considerablemente):
+- Glassmorphism (paneles translúcidos borrosos)
+- Neomorphism
+- Sombras enormes, difusas y desconectadas
+- Botones gigantes o "Pill-shaped" exagerados
+- Colores chillones como fondo
+- Carouseles o Sliders automáticos
+- Ilutraciones genéricas "Corporate Memphis"
+- Tipografías divertidas o handwriting</pre>
+                    </div>
+                `
+            },
+            {
+                title: "Describí la experiencia y las fricciones",
+                description: "No pidas pantallas. Narrá el viaje del usuario.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">No pidas 'un hero y tres cards'. Explicá la historia de la persona que entra a la web y qué fricciones tiene.</p>
+                    
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-5 relative group">
+                        <button onclick="copyText('experiencia')" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                        <pre id="experiencia" class="font-mono text-sm text-gray-300 whitespace-pre-wrap">Contexto de la experiencia:
+El usuario llega frustrado después de intentar usar una herramienta complicada de la competencia. Necesita sentir alivio inmediato.
+
+La navegación debe ser:
+1. Obvia: Sin menús ocultos tipo hamburguesa en desktop.
+2. Directa: Debe entender el precio de nuestro servicio sin hacer scroll excesivo.
+3. Tranquilizadora: Mostrar logos de empresas confiables inmediatamente para reducir la ansiedad de compra.
+
+Diseñá la estructura en base a este viaje emocional.</pre>
+                    </div>
+                `
+            },
+            {
+                title: "Establecé prioridades (Trade-offs)",
+                description: "Definí qué importa más. Si no lo hacés, la IA decide por vos.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">¿Estética o velocidad de carga? ¿Código mantenible o prototipo rápido? Jerarquizar ayuda al modelo a resolver conflictos técnicos.</p>
+                    
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-5">
+                        <h4 class="text-white text-sm font-medium mb-4">Ejemplo de Matriz de Prioridades</h4>
+                        <ul class="space-y-3 font-mono text-sm text-gray-300">
+                            <li class="flex items-center gap-3"><span class="text-white bg-green-900/50 border border-green-800 px-2 py-1 rounded">1. UX Visual</span> <span class="text-gray-500 font-sans text-xs">Innegociable.</span></li>
+                            <li class="flex items-center gap-3"><span class="text-white bg-blue-900/50 border border-blue-800 px-2 py-1 rounded">2. Accesibilidad</span> <span class="text-gray-500 font-sans text-xs">Contraste y navegación por teclado.</span></li>
+                            <li class="flex items-center gap-3"><span class="text-white bg-yellow-900/50 border border-yellow-800 px-2 py-1 rounded">3. Performance</span> <span class="text-gray-500 font-sans text-xs">Secundario frente a lo visual.</span></li>
+                            <li class="flex items-center gap-3 opacity-50"><span class="text-gray-400 bg-gray-800 border border-gray-700 px-2 py-1 rounded">4. Animaciones complejas</span> <span class="text-gray-500 font-sans text-xs">Descartables si ensucian el código.</span></li>
+                        </ul>
+                    </div>
+                `
+            },
+            {
+                title: "Pedile que critique su propio trabajo",
+                description: "Obligala a auditar su propio código.",
+                content: `
+                    <p class="text-gray-400 mb-4 leading-relaxed">Los modelos son mejores criticando que creando. Si le pedís que revise su propio código como si fuera un auditor, va a encontrar errores que ignoró en el primer intento.</p>
+                    
+                    <div class="mb-6 p-4 bg-teal-950/20 border border-teal-900/30 rounded-lg">
+                        <p class="text-sm text-gray-300">💡 Evaluar un resultado consume menos recursos cognitivos que inventarlo. Es más fácil corregir un examen que escribirlo.</p>
+                    </div>
+
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-5 border-l-4 border-l-purple-500 relative group">
+                        <button onclick="copyText('critica')" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                        <pre id="critica" class="font-mono text-sm text-gray-200 whitespace-pre-wrap">Hecho esto, quiero que cambies de rol. Convertite en un Diseñador UX Senior muy exigente y crítico.
+
+1. Criticá el diseño y código que acabás de generar de forma dura y objetiva.
+2. Identificá al menos 3 debilidades o áreas donde se ve "genérico" o "mediocre".
+3. Proponé las soluciones técnicas para elevarlo a un estándar de calidad tipo Apple/Stripe.
+4. Una vez que listes esto, reescribí el código aplicando tus propias correcciones.</pre>
+                    </div>
+                `
+            },
+            {
+                title: "Usá iteraciones paso a paso",
+                description: "Avanzá por fases para que la IA no pierda contexto.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">Pedir todo junto satura a la IA y hace que ignore instrucciones. Guiá el proceso y confirmá cada fase.</p>
+                    
+                    <div class="relative pl-8 space-y-6 before:absolute before:inset-0 before:ml-3 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-800 before:to-transparent">
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                            <div class="flex items-center justify-center w-6 h-6 rounded-full border border-gray-700 bg-gray-900 text-gray-400 text-xs font-bold absolute left-0 translate-x-[-0.75rem] md:mx-auto md:left-1/2 md:-translate-x-1/2 z-10">1</div>
+                            <div class="w-[calc(100%-2rem)] md:w-[calc(50%-2rem)] p-4 rounded bg-gray-900/50 border border-gray-800">
+                                <h4 class="font-medium text-white mb-1 text-sm">Arquitectura de la información</h4>
+                                <p class="text-xs text-gray-500">"Listá las secciones y qué va en cada una. No programes nada aún."</p>
+                            </div>
+                        </div>
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                            <div class="flex items-center justify-center w-6 h-6 rounded-full border border-gray-700 bg-gray-900 text-gray-400 text-xs font-bold absolute left-0 translate-x-[-0.75rem] md:mx-auto md:left-1/2 md:-translate-x-1/2 z-10">2</div>
+                            <div class="w-[calc(100%-2rem)] md:w-[calc(50%-2rem)] p-4 rounded bg-gray-900/50 border border-gray-800">
+                                <h4 class="font-medium text-white mb-1 text-sm">Estructura HTML (Esqueleto)</h4>
+                                <p class="text-xs text-gray-500">"Generá solo el HTML semántico basado en el paso 1, sin estilos."</p>
+                            </div>
+                        </div>
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                            <div class="flex items-center justify-center w-6 h-6 rounded-full border border-gray-700 bg-gray-900 text-gray-400 text-xs font-bold absolute left-0 translate-x-[-0.75rem] md:mx-auto md:left-1/2 md:-translate-x-1/2 z-10">3</div>
+                            <div class="w-[calc(100%-2rem)] md:w-[calc(50%-2rem)] p-4 rounded bg-gray-900/50 border border-gray-800">
+                                <h4 class="font-medium text-white mb-1 text-sm">Estilos Visuales (UI)</h4>
+                                <p class="text-xs text-gray-500">"Ahora agregá las clases de Tailwind respetando las reglas visuales."</p>
+                            </div>
+                        </div>
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                            <div class="flex items-center justify-center w-6 h-6 rounded-full border border-blue-500 bg-blue-900/20 text-blue-400 text-xs font-bold absolute left-0 translate-x-[-0.75rem] md:mx-auto md:left-1/2 md:-translate-x-1/2 z-10">4</div>
+                            <div class="w-[calc(100%-2rem)] md:w-[calc(50%-2rem)] p-4 rounded bg-blue-900/10 border border-blue-800">
+                                <h4 class="font-medium text-blue-400 mb-1 text-sm">Interactividad (JS/React)</h4>
+                                <p class="text-xs text-gray-400">"Finalmente, agregá la lógica de estado y animaciones."</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Pedile varios caminos (Pensamiento Divergente)",
+                description: "La primera respuesta siempre es la más obvia. Exigile opciones.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">Forzá al algoritmo a explorar. Pedir alternativas te da contexto para tomar la mejor decisión de diseño.</p>
+                    
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-5 relative group">
+                        <button onclick="copyText('caminos')" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                        <pre id="caminos" class="font-mono text-sm text-gray-300 whitespace-pre-wrap">Para el Hero Section de esta página médica, proponé tres enfoques visuales y estructurales radicalmente distintos:
+
+- Enfoque 1: Conservador, altamente enfocado en confianza y empatía tradicional.
+- Enfoque 2: Altamente tecnológico, enfocado en que somos vanguardia y ciencia pura.
+- Enfoque 3: Minimalista y disruptivo, asumiendo que el usuario ya nos conoce.
+
+Comparalos, listame los pros y contras de cada uno según UX, y decime cuál recomendarías.</pre>
+                    </div>
+                `
+            },
+            {
+                title: "Deconstruí las referencias",
+                description: "Nombrar una marca no sirve de nada si no aislás qué querés copiar.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">Decir 'hacelo estilo Apple' es inútil. Apple tiene landings con 3D y manuales de texto plano. Especificá qué atributo exacto te interesa.</p>
+                    
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-5">
+                        <pre class="font-mono text-sm text-gray-300 whitespace-pre-wrap">INSPIRACIÓN Y REFERENCIAS CRUZADAS:
+
+1. De Apple quiero:
+- La jerarquía tipográfica (títulos masivos con peso bold, subtítulos finos y legibles).
+- El uso dramático del espacio negativo (mucho aire entre secciones).
+
+2. De Linear.app quiero:
+- La paleta oscura de fondo (#0A0A0A) combinada con bordes extremadamente sutiles (#262626).
+- Los botones pequeños, sin padding exagerado, con iconos muy finos.
+
+3. De Stripe quiero:
+- La forma en que agrupan información compleja en tarjetas claras con sombras de color difuso.
+- Las microinteracciones rápidas al hacer hover en los links.</pre>
+                    </div>
+                `
+            },
+            {
+                title: "Usá restricciones extremas",
+                description: "Ponerle límites evita que la IA sobrecargue el código.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">La IA tiende a saturar: suma gradientes, animaciones y colores sin control. Establecer máximos genera diseños mucho más limpios.</p>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4">
+                            <h4 class="text-xs text-gray-500 uppercase tracking-widest mb-2">Máximos permitidos</h4>
+                            <ul class="font-mono text-sm text-gray-300 space-y-2">
+                                <li class="flex items-center gap-2"><svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> 5 secciones en total.</li>
+                                <li class="flex items-center gap-2"><svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> 2 colores base de UI.</li>
+                                <li class="flex items-center gap-2"><svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Solo pesos de fuente 400 y 600.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4">
+                            <h4 class="text-xs text-gray-500 uppercase tracking-widest mb-2">Prohibiciones absolutas</h4>
+                            <ul class="font-mono text-sm text-gray-300 space-y-2">
+                                <li class="flex items-center gap-2 text-red-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg> Sliders (carouseles).</li>
+                                <li class="flex items-center gap-2 text-red-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg> Componentes flotantes.</li>
+                                <li class="flex items-center gap-2 text-red-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg> Texto justificado.</li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Hacé que tome decisiones (Persona Adoption)",
+                description: "Dale un rol y autoridad técnica para mejorar la respuesta.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">Pedir 'hacé lo mejor' genera código mediocre. Pedir 'actuá como ingeniero principal de Vercel' fuerza a la IA a usar patrones modernos.</p>
+                    
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-5 border-l-4 border-l-yellow-600 relative group">
+                        <button onclick="copyText('decisiones')" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                        <pre id="decisiones" class="font-mono text-sm text-gray-200 whitespace-pre-wrap">Asumí el rol de un Director de Diseño y un Desarrollador Frontend Senior trabajando en equipo.
+
+Tomá decisiones autoritativas sobre espaciado, grid y semántica HTML. Justificá cada decisión técnica importante en comentarios breves.
+
+Si alguna de mis peticiones previas va en contra de las buenas prácticas modernas de la web (como accesibilidad pobre o mala UX), ignorá mi petición, aplicá la solución correcta y explicame por qué me corregiste.</pre>
+                    </div>
+                `
+            },
+            {
+                title: "Pedile razonamiento de UX antes de pintar píxeles",
+                description: "Que el diseño responda a problemas reales, no a cuestiones estéticas.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">Pedir componentes sueltos es un error. Exigir un análisis UX previo logra que la interfaz tenga sentido lógico para el usuario.</p>
+                    
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-5 relative group">
+                        <button onclick="copyText('ux')" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                        <pre id="ux" class="font-mono text-sm text-gray-300 whitespace-pre-wrap">Antes de diseñar la pantalla de "Checkout" (Pago), explicá brevemente:
+
+1. El estado mental del usuario en este punto (probablemente ansioso por poner su tarjeta).
+2. Qué información busca reasegurar antes de presionar "Pagar".
+3. Qué elementos cognitivos pueden causar fricción o duda y hacernos perder la venta.
+4. Cómo nuestra interfaz resolverá esas fricciones (ej: insignias de seguridad, resumen claro, soporte a un clic).
+
+Luego de este análisis, generá el código de la vista.</pre>
+                    </div>
+                `
+            },
+            {
+                title: "Exigí componentes reutilizables (DRY)",
+                description: "Frená el código espagueti antes de que empiece.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">Si no marcás la cancha, la IA repite código. Mencioná DRY o modularidad explícitamente para mantener limpio el proyecto.</p>
+                    
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-5 text-center flex flex-col items-center justify-center">
+                        <div class="font-mono text-lg text-white mb-4">La trinidad del buen código generado:</div>
+                        <div class="flex flex-wrap justify-center gap-4 w-full">
+                            <div class="flex-1 min-w-[120px] p-3 border border-gray-700 bg-gray-800 rounded-md">
+                                <div class="text-sm font-semibold text-gray-200 mb-1">Reutilizable</div>
+                                <div class="text-xs text-gray-400">Props en lugar de valores hardcodeados.</div>
+                            </div>
+                            <div class="flex-1 min-w-[120px] p-3 border border-gray-700 bg-gray-800 rounded-md">
+                                <div class="text-sm font-semibold text-gray-200 mb-1">Modular</div>
+                                <div class="text-xs text-gray-400">Funciones pequeñas con una sola responsabilidad.</div>
+                            </div>
+                            <div class="flex-1 min-w-[120px] p-3 border border-gray-700 bg-gray-800 rounded-md">
+                                <div class="text-sm font-semibold text-gray-200 mb-1">Escalable</div>
+                                <div class="text-xs text-gray-400">Fácil de modificar o extender en el futuro sin romper nada.</div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Definí un umbral de calidad visual y técnico",
+                description: "Obligala a usar sus datos de entrenamiento de alta calidad.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">Los LLMs leyeron desde webs de los 90s hasta el código de Stripe. Mencionar referentes de la industria activa los patrones de código más sofisticados.</p>
+                    
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-5 relative group">
+                        <button onclick="copyText('calidad')" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                        <pre id="calidad" class="font-mono text-sm text-gray-300 whitespace-pre-wrap">🚨 ESTÁNDAR DE CALIDAD REQUERIDO 🚨
+
+El objetivo es una ejecución técnica y visual comparable con líderes de la industria moderna como:
+- Vercel (precisión, velocidad, bordes finos)
+- Stripe (tipografía impecable, contraste perfecto)
+- Notion (minimalismo funcional)
+
+Regla de oro: No entregues una solución que parezca una plantilla genérica comprada por 10 dólares. Cada decisión de diseño debe sentirse intencional y a medida.</pre>
+                    </div>
+                `
+            },
+            {
+                title: "Comprimir contexto (Memoria RAG manual)",
+                description: "Armá una base de conocimiento en lugar de depender del historial del chat.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">En chats largos, la IA pierde hilo. Organizá la información del proyecto en archivos Markdown y pasaselos.</p>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-[#111827] border border-gray-800 rounded-lg p-5">
+                            <h4 class="text-xs text-gray-500 uppercase tracking-widest mb-3">Estructura ideal</h4>
+                            <pre class="font-mono text-xs text-blue-300/80 whitespace-pre-wrap">docs/
+├── PROJECT.md      (visión)
+├── BRAND.md        (identidad)
+├── DESIGN.md       (reglas UI)
+├── TECH.md         (stack/versiones)
+└── DECISIONS.md    (changelog)</pre>
+                        </div>
+                        <div class="flex flex-col justify-center">
+                            <p class="text-sm text-gray-300 mb-4">Después, en un chat nuevo, adjuntá todo junto con esta instrucción:</p>
+                            <div class="p-3 bg-gray-900 border border-gray-700 rounded text-sm italic text-gray-400">
+                                "Por favor, leé silenciosamente los archivos adjuntos. Confirma con un simple 'Entendido' cuando hayas asimilado la arquitectura, diseño y stack de este proyecto."
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Lenguaje preciso > Adjetivos vagos",
+                description: "Cambiá lo subjetivo por instrucciones técnicas precisas.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">La belleza es subjetiva; los píxeles no. Para lograr calidad técnica, tenés que hablar el idioma del sistema de diseño.</p>
+                    
+                    <div class="overflow-x-auto rounded-lg border border-gray-800 shadow-xl">
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-gray-400 uppercase bg-gray-900 border-b border-gray-800">
+                                <tr>
+                                    <th class="px-4 py-4 w-1/3">El adjetivo inútil</th>
+                                    <th class="px-4 py-4 w-2/3 border-l border-gray-800">La especificación técnica</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-300">
+                                <tr class="border-b border-gray-800/50 bg-gray-950/40 hover:bg-gray-900/60 transition-colors">
+                                    <td class="px-4 py-4 font-medium text-red-400">"Quiero un diseño moderno"</td>
+                                    <td class="px-4 py-4 border-l border-gray-800">"Tipografía sans serif geométrica, contraste alto (blanco/negro), bordes redondos de máximo 6px, y ausencia total de drop-shadows."</td>
+                                </tr>
+                                <tr class="border-b border-gray-800/50 bg-gray-950/40 hover:bg-gray-900/60 transition-colors">
+                                    <td class="px-4 py-4 font-medium text-red-400">"Que sea súper limpio"</td>
+                                    <td class="px-4 py-4 border-l border-gray-800">"Incrementar el 'padding' y 'margin' (whitespace) en un 50% respecto al estándar. Eliminar líneas separadoras, usar escalas de grises para diferenciar jerarquía."</td>
+                                </tr>
+                                <tr class="bg-gray-950/40 hover:bg-gray-900/60 transition-colors">
+                                    <td class="px-4 py-4 font-medium text-red-400">"Hacelo fluido y dinámico"</td>
+                                    <td class="px-4 py-4 border-l border-gray-800">"Agregar transiciones CSS en todos los botones de estado (:hover, :focus) con una duración no mayor a 200ms y función de curva 'ease-out'."</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `
+            },
+            {
+                title: "Diseñá un flujo operativo estandarizado",
+                description: "Sumá la IA a un proceso riguroso, no la uses de máquina expendedora.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">Los profesionales no usan la IA para saltearse pasos; la usan para acelerarlos. Un flujo estricto garantiza que nada quede suelto.</p>
+                    
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-5 relative group">
+                        <button onclick="copyText('proceso')" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                        <pre id="proceso" class="font-mono text-sm text-gray-300 whitespace-pre-wrap">Para este feature completo, adoptaremos este flujo estricto paso a paso. Yo aprobaré cada fase antes de que avances a la siguiente:
+
+Fase 1: Análisis y Riesgos (Listar qué puede salir mal).
+Fase 2: Arquitectura de Datos (Qué estado necesitamos guardar).
+Fase 3: Wireframing UX (Estructura de la vista en Markdown).
+Fase 4: Desarrollo UI Estático (Solo HTML/CSS semántico).
+Fase 5: Integración Lógica (Agregar el JS/Interactividad).
+Fase 6: Refactorización (Clean code, accesibilidad, DRY).
+
+Comencemos por la Fase 1 basándonos en los requerimientos iniciales.</pre>
+                    </div>
+                `
+            },
+            {
+                title: "Gestioná tu contexto con Obsidian",
+                description: "Usá Obsidian como base de datos local en texto plano.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">Para guardar el contexto del proyecto, los <code class="text-gray-300 bg-gray-800 px-1 rounded">.md</code> son clave. Obsidian trabaja nativamente en Markdown y es 100% local. Es la herramienta definitiva para esto.</p>
+                    
+                    <div class="mb-6 p-4 bg-purple-950/20 border border-purple-900/30 rounded-lg">
+                        <h4 class="text-purple-400 text-sm font-semibold mb-2 flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"></path></svg>
+                            ¿Por qué Obsidian y no Notion o Google Docs?
+                        </h4>
+                        <p class="text-sm text-gray-300">Notion exporta código sucio. Docs rompe el formato. Obsidian lee archivos crudos del disco. Al pasarle esos archivos a Claude, lee el texto puro sin metadatos basura.</p>
+                    </div>
+
+                    <h4 class="text-white text-sm font-medium mb-4">Estructura recomendada para tu Bóveda (Vault)</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-gray-900 border border-gray-800 rounded-lg p-5">
+                            <h5 class="text-xs text-gray-500 uppercase tracking-widest mb-3">Carpetas (Estructura dura)</h5>
+                            <pre class="font-mono text-xs text-blue-300/80 whitespace-pre-wrap">📁 Mi Segundo Cerebro
+├── 📁 01_Proyectos
+│   ├── 📁 Web_Cliente_A
+│   │   ├── 📄 PROJECT.md
+│   │   └── 📄 BRAND.md
+│   └── 📁 Mi_App_SaaS
+├── 📁 02_Libreria_Prompts
+│   ├── 📄 prompt_auditoria_ux.md
+│   └── 📄 prompt_refactor_css.md
+└── 📁 03_Recursos_Globales
+    └── 📄 stack_preferido.md</pre>
+                        </div>
+                        <div class="bg-gray-900 border border-gray-800 rounded-lg p-5">
+                            <h5 class="text-xs text-gray-500 uppercase tracking-widest mb-3">Enlaces (Estructura líquida)</h5>
+                            <p class="text-sm text-gray-400 mb-3">Podés enlazar notas usando corchetes <code class="text-gray-300 bg-gray-800 px-1 rounded">[[Nota]]</code>. Ideal para armar el prompt antes de pasarlo a Claude:</p>
+                            <pre class="font-mono text-xs text-gray-300 whitespace-pre-wrap"># Tarea de hoy
+Armar el dashboard de métricas.
+
+# Referencias
+1. Contexto general: [[PROJECT.md]]
+2. Componentes: [[BRAND.md]]
+3. Usar el prompt de [[prompt_auditoria_ux.md]] al finalizar.</pre>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-4 border-l-4 border-l-blue-500">
+                        <h4 class="text-sm font-semibold text-gray-200 mb-2">⚡ Flujo de trabajo hiper-rápido:</h4>
+                        <ol class="list-decimal list-inside text-sm text-gray-400 space-y-2">
+                            <li>Abrí Obsidian y Claude en pantalla dividida.</li>
+                            <li>Creá un <code class="text-gray-300 bg-gray-800 px-1 rounded">draft_prompt.md</code>.</li>
+                            <li>Redactá las especificaciones en Markdown limpio.</li>
+                            <li>Pasale el archivo directo a la IA.</li>
+                            <li>Guardá en Obsidian cualquier regla nueva de diseño que surja.</li>
+                        </ol>
+                    </div>
+                `
+            },
+            {
+                title: "Notas Atómicas para Contexto Quirúrgico",
+                description: "Fragmentá la información en notas específicas. No envíes el proyecto entero para cambiar un botón.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">Las IAs pueden leer libros enteros, pero sufren de atención dispersa. Si le mandás un documento gigante para tocar un botón, se va a perder. La clave es enviar solo la documentación necesaria.</p>
+                    
+                    <div class="mb-6 p-4 bg-teal-950/20 border border-teal-900/30 rounded-lg">
+                        <h4 class="text-teal-400 text-sm font-semibold mb-2 flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            El concepto de "Cherry-Picking" de Contexto
+                        </h4>
+                        <p class="text-sm text-gray-300">Armá bloques pequeños de información. Al momento de pedir código, arrastrá <strong>únicamente</strong> los archivos relevantes para la tarea.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-gray-900 border border-gray-800 rounded-lg p-5">
+                            <h5 class="text-xs text-gray-500 uppercase tracking-widest mb-3">Estructura Atómica</h5>
+                            <pre class="font-mono text-xs text-gray-400 whitespace-pre-wrap">📁 Componentes
+├── 📄 Botones.md
+├── 📄 Formularios.md
+├── 📄 Modales.md
+└── 📄 Tipografia.md
+
+📁 Logica
+├── 📄 Autenticacion.md
+└── 📄 Carrito.md</pre>
+                        </div>
+                        
+                        <div class="bg-gray-900 border border-gray-800 rounded-lg p-5">
+                            <h5 class="text-xs text-gray-500 uppercase tracking-widest mb-3">Ejemplo de uso</h5>
+                            <p class="text-sm text-gray-300 mb-2">"Claude, construí el componente del Carrito de compras. Usá las reglas de UI y la lógica de estos 3 archivos adjuntos:"</p>
+                            <ul class="text-xs font-mono text-blue-400 space-y-1">
+                                <li>📎 Carrito.md (reglas de negocio)</li>
+                                <li>📎 Botones.md (estilos base)</li>
+                                <li>📎 Modales.md (comportamiento de UI)</li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Estandarizá tus peticiones (Templates)",
+                description: "Configurá plantillas en Obsidian para automatizar estructuras de prompts.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">Empezar desde cero en la caja de texto agota. Con el plugin de Plantillas de Obsidian podés tener estructuras prearmadas que aseguren las variables críticas (anti-prompting, prioridades, contexto).</p>
+                    
+                    <div class="bg-gray-900 border border-gray-800 rounded-lg p-5 relative group border-l-4 border-l-yellow-500">
+                        <button onclick="copyText('plantilla-obsidian')" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                        <h4 class="text-white text-sm font-medium mb-3">Archivo: <code class="text-gray-400 bg-gray-800 px-1 rounded">/Templates/Prompt_Generador_Componente.md</code></h4>
+                        <pre id="plantilla-obsidian" class="font-mono text-xs text-gray-300 whitespace-pre-wrap"># Contexto de la Tarea
+Necesito crear un componente de: [Reemplazar con el componente]
+Para el proyecto: [[PROJECT.md]]
+
+# Requerimientos Técnicos
+- Lenguaje/Framework: [Ej: React, Tailwind]
+- Estado/Lógica necesaria: [Describir]
+
+# Restricciones (Anti-Prompt)
+- NO usar: [Clases genéricas, librerías externas]
+- Respetar el archivo de diseño: [[BRAND.md]]
+
+# Entregable Esperado
+1. Primero, listá los "edge cases" (casos límite).
+2. Proponé la estructura de carpetas/archivos.
+3. Entregá el código completo y comentado.
+
+_Instrucción para IA: Asumí el rol de un Desarrollador Frontend Senior._</pre>
+                    </div>
+                    
+                    <p class="text-sm text-gray-400 mt-4">💡 <strong>Flujo:</strong> Nota nueva -> <code>Cmd/Ctrl + T</code> -> insertás plantilla -> completás los espacios -> enviás a Claude. Rápido y sin esfuerzo mental.</p>
+                `
+            },
+            {
+                title: "Documentá las victorias (Feedback Loop)",
+                description: "Guardá el código que funciona. La IA va a olvidarlo en el próximo chat.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">Resolver un problema grave, cerrar el chat y volver a empezar de cero a la semana es un error común. <strong>Tu conocimiento técnico tiene que guardarse en tu bóveda.</strong></p>
+                    
+                    <div class="mb-6 border border-gray-800 rounded-lg overflow-hidden text-sm">
+                        <div class="bg-gray-900 px-4 py-3 border-b border-gray-800">
+                            <h4 class="text-white font-medium flex items-center gap-2">
+                                <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                El ciclo de conocimiento infinito
+                            </h4>
+                        </div>
+                        <div class="p-4 bg-gray-950 flex flex-col gap-3">
+                            <div class="flex items-start gap-3">
+                                <span class="bg-blue-900/50 text-blue-400 px-2 py-0.5 rounded text-xs font-bold mt-0.5">1</span>
+                                <p class="text-gray-400">Claude te tira una solución perfecta.</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="bg-purple-900/50 text-purple-400 px-2 py-0.5 rounded text-xs font-bold mt-0.5">2</span>
+                                <p class="text-gray-400">Creás una nota en Obsidian. Pegás el código y explicás por qué funciona.</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="bg-green-900/50 text-green-400 px-2 py-0.5 rounded text-xs font-bold mt-0.5">3</span>
+                                <p class="text-gray-400">En el próximo proyecto, usás ese archivo exacto como base para pedirle código.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="text-sm text-gray-400">Con el tiempo, Obsidian deja de ser un bloc de notas y pasa a ser tu System Prompt maestro.</p>
+                `
+            },
+            {
+                title: "El Pipeline: De la Idea al Código",
+                description: "El sistema que conecta una idea cruda con la ejecución de la IA.",
+                content: `
+                    <p class="text-gray-400 mb-6 leading-relaxed">No lleves una idea vaga directo a la IA. Pasala antes por Obsidian. Este es el pipeline de trabajo real.</p>
+                    
+                    <div class="relative pl-8 space-y-6 before:absolute before:inset-0 before:ml-3 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gray-800">
+                        <!-- Step 1 -->
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                            <div class="flex items-center justify-center w-8 h-8 rounded-full border-2 border-gray-700 bg-gray-900 text-gray-400 text-xs font-bold absolute left-0 translate-x-[-1rem] md:mx-auto md:left-1/2 md:-translate-x-1/2 z-10">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            </div>
+                            <div class="w-[calc(100%-2.5rem)] md:w-[calc(50%-2.5rem)] p-4 rounded bg-gray-900 border border-gray-800">
+                                <span class="text-xs font-mono text-purple-400 mb-1 block">Fase 1: Human Dump (Obsidian)</span>
+                                <h4 class="font-medium text-white mb-1 text-sm">Descarga Caótica</h4>
+                                <p class="text-xs text-gray-400">Guardás notas sueltas, links y requerimientos sin formato.</p>
+                            </div>
+                        </div>
+                        <!-- Step 2 -->
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                            <div class="flex items-center justify-center w-8 h-8 rounded-full border-2 border-gray-700 bg-gray-900 text-gray-400 text-xs font-bold absolute left-0 translate-x-[-1rem] md:mx-auto md:left-1/2 md:-translate-x-1/2 z-10">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            </div>
+                            <div class="w-[calc(100%-2.5rem)] md:w-[calc(50%-2.5rem)] p-4 rounded bg-gray-900 border border-gray-800">
+                                <span class="text-xs font-mono text-blue-400 mb-1 block">Fase 2: Estructuración (Claude + Obsidian)</span>
+                                <h4 class="font-medium text-white mb-1 text-sm">Traducción a Especificación</h4>
+                                <p class="text-xs text-gray-400">Le pedís a Claude que traduzca esas notas sueltas a un PRD (Product Requirements Document) formal.</p>
+                            </div>
+                        </div>
+                        <!-- Step 3 -->
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                            <div class="flex items-center justify-center w-8 h-8 rounded-full border-2 border-blue-500 bg-blue-900 text-white text-xs font-bold absolute left-0 translate-x-[-1rem] md:mx-auto md:left-1/2 md:-translate-x-1/2 z-10 shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            </div>
+                            <div class="w-[calc(100%-2.5rem)] md:w-[calc(50%-2.5rem)] p-4 rounded bg-blue-900/10 border border-blue-800">
+                                <span class="text-xs font-mono text-orange-400 mb-1 block">Fase 3: Ejecución (Claude)</span>
+                                <h4 class="font-medium text-white mb-1 text-sm">Generación Iterativa</h4>
+                                <p class="text-xs text-gray-400">Recién ahora usás las técnicas de esta guía para iterar sobre el código final.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            }
+        ];
+
+        let currentIndex = 0;
+
+        // DOM Elements
+        const navList = document.getElementById('nav-list');
+        const contentArea = document.getElementById('content-area');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const sidebar = document.getElementById('sidebar');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+
+        
+        function renderNav() {
+            navList.innerHTML = '';
+            guideData.forEach((item, index) => {
+                const btn = document.createElement('button');
+                btn.className = `nav-item w-full text-left px-4 py-2.5 rounded text-sm transition-colors duration-200 ${index === currentIndex ? 'active' : 'text-gray-400 hover:bg-gray-900 hover:text-gray-200'}`;
+                
+                // Truncate title slightly for sidebar if too long
+                const shortTitle = item.title.length > 28 ? item.title.substring(0, 26) + '...' : item.title;
+                
+                btn.innerHTML = `<span class="opacity-50 mr-2 text-xs font-mono">${String(index + 1).padStart(2, '0')}</span> ${shortTitle}`;
+                btn.onclick = () => {
+                    loadContent(index);
+                    if(window.innerWidth < 768) toggleMobileMenu();
+                };
+                navList.appendChild(btn);
+            });
+        }
+
+        function loadContent(index) {
+            // Update state
+            currentIndex = index;
+            
+            // Re-render nav to update active state
+            renderNav();
+
+            // Animate content out/in
+            contentArea.classList.remove('animate-fade-in');
+            void contentArea.offsetWidth; // Trigger reflow
+            contentArea.classList.add('animate-fade-in');
+
+            const item = guideData[index];
+            
+            // Build content HTML
+            contentArea.innerHTML = `
+                <div class="mb-2 flex items-center gap-3">
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-900 border border-gray-800 text-xs font-mono text-gray-400">
+                        ${index + 1}
+                    </span>
+                    <span class="text-gray-500 text-sm font-medium tracking-wide uppercase">Principio</span>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-semibold tracking-tight text-white mb-4 leading-tight">${item.title}</h1>
+                <h2 class="text-xl md:text-2xl text-gray-400 font-light mb-12 tracking-tight leading-snug">${item.description}</h2>
+                <div class="prose prose-invert prose-p:text-gray-400 prose-p:leading-relaxed max-w-none">
+                    ${item.content}
+                </div>
+            `;
+
+            // Update navigation buttons
+            btnPrev.classList.toggle('invisible', currentIndex === 0);
+            btnNext.classList.toggle('invisible', currentIndex === guideData.length - 1);
+
+            // Scroll to top of content
+            document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        
+        btnPrev.addEventListener('click', () => {
+            if (currentIndex > 0) loadContent(currentIndex - 1);
+        });
+
+        btnNext.addEventListener('click', () => {
+            if (currentIndex < guideData.length - 1) loadContent(currentIndex + 1);
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                if (currentIndex < guideData.length - 1) loadContent(currentIndex + 1);
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                if (currentIndex > 0) loadContent(currentIndex - 1);
+            }
+        });
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const isClosed = sidebar.classList.contains('-translate-x-full');
+            if (isClosed) {
+                sidebar.classList.remove('-translate-x-full');
+                mobileOverlay.classList.remove('hidden');
+                setTimeout(() => mobileOverlay.classList.add('opacity-100'), 10);
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                mobileOverlay.classList.remove('opacity-100');
+                setTimeout(() => mobileOverlay.classList.add('hidden'), 300);
+            }
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        mobileOverlay.addEventListener('click', toggleMobileMenu);
+
+        // Copy to clipboard utility
+        function copyText(elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            
+            const textToCopy = el.innerText || el.textContent;
+            
+            // Fallback for iFrames or environments where navigator.clipboard might fail
+            const textarea = document.createElement('textarea');
+            textarea.value = textToCopy;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = 0;
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast();
+            } catch (err) {
+                console.error('Failed to copy', err);
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-10', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+            }, 2000);
+        }
+
+        // Initialize App
+        loadContent(0);
+
+    </script>
+</body>
+</html>
